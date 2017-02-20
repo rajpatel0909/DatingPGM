@@ -60,8 +60,31 @@ if __name__ == "__main__":
     ])
     pe = ParameterEstimator(model, df)  
     cpd = pe.state_counts('match')
-    print(cpd)        
-
-    print (model.active_trail_nodes("dec"))
+    print(type(cpd)) 
+    print(cpd)      
+    print(cpd[1][1])
+    #print (model.active_trail_nodes("dec"))
+    # mle = MaximumLikelihoodEstimator(model, df)
+    # print(mle.estimate_cpd('VALV'))  # unconditional
+    # print(mle.estimate_cpd('PVS'))  # conditional
+    
+#     print (model.active_trail_nodes("MINV"))
+#     print (model.active_trail_nodes("PVS"))
+#     print (model.active_trail_nodes("SAO2"))
+#     print (model.active_trail_nodes("MVS"))
+#     print (model.active_trail_nodes("VMCH"))
+#     print (model.active_trail_nodes("PRSS"))
+#     print (model.active_trail_nodes("DISC"))
+#     print (model.active_trail_nodes("VTUB"))
+#     print (model.active_trail_nodes("ECO2"))
+#     print (model.active_trail_nodes("VLNG"))
+#     print (model.active_trail_nodes("VALV"))
+#     print (model.active_trail_nodes("ACO2"))
+#     print (model.active_trail_nodes("INT"))
+#     print (model.active_trail_nodes("SHNT"))
+    
+#     model.fit(df, MaximumLikelihoodEstimator)
+#     infer = VariableElimination(model)
+#     print (infer.query(['VALV'],evidence={'VLNG':1,'DISC':1}) ['VALV'])
     
     #model.fit(df, MaximumLikelihoodEstimator)
