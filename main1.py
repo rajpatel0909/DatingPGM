@@ -22,7 +22,7 @@ if __name__ == "__main__":
     print "Hello World"
     
     #df = pd.read_csv("C:/MyStuff/SEM2/AML/Project1/tes.csv");
-    df = pd.read_csv("tes.csv");
+    df = pd.read_csv("tes1.csv");
 
     model=BayesianModel([('gender', 'attr2_1'),('gender', 'sinc2_1'),('gender', 'intel2_1'),
                          ('gender', 'fun2_1'),('gender', 'amb2_1'),('gender', 'shar2_1'),
