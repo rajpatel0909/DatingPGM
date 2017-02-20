@@ -6,14 +6,14 @@ __author__ = "rajpu"
 __date__ = "$Feb 20, 2017 10:29:20 AM$"
 
 import openpyxl
-import andas as pd 
+import pandas as pd 
 import numpy as np
 import math
 import matplotlib.pyplot as plt
 from numpy.linalg import inv
 import pgmpy
 from pgmpy.models import BayesianModel
-from pgpmpy.factors.discrete import TabularCPD
+from pgmpy.factors.discrete import TabularCPD
 from pgmpy.estimators import MaximumLikelihoodEstimator
 from pgmpy.estimators import ParameterEstimator
 from pgmpy.inference import VariableElimination
@@ -64,4 +64,4 @@ if __name__ == "__main__":
 
     print (model.active_trail_nodes("dec"))
     
-    model.fit(df, MaximumLikelihoodEstimator)
+    #model.fit(df, MaximumLikelihoodEstimator)
