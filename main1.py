@@ -2,7 +2,7 @@
 # To change this template file, choose Tools | Templates
 # and open the template in the editor.
 
-__author__ = "rajpu"
+__author__ = "rajpu&mihir"
 __date__ = "$Feb 20, 2017 10:29:20 AM$"
 
 import openpyxl
@@ -60,9 +60,12 @@ if __name__ == "__main__":
     ])
     pe = ParameterEstimator(model, df)  
     cpd = pe.state_counts('match')
-    print(type(cpd)) 
-    print(cpd)      
-    print(cpd[1][1])
+    cpd = cpd.transpose() 
+    print cpd
+    print "==========================="
+    #Baap Code to get the probabilities from the frquencies.
+    cpd_prob = cpd.div(cpd.sum(axis=1), axis=0)
+    print cpd_prob
     #print (model.active_trail_nodes("dec"))
     # mle = MaximumLikelihoodEstimator(model, df)
     # print(mle.estimate_cpd('VALV'))  # unconditional
