@@ -32,8 +32,9 @@ model = BayesianModel(getLinks.getLinksOfNodes())
 print(model)
 #Finding CPDS
 pe = ParameterEstimator(model, df) 
- #CPD FOR NODE: LIKE
+
 nodes = getNodes.getNodesFromCSV();
+ 
 cpds = {}
 for node in nodes:
     #print node
@@ -41,13 +42,18 @@ for node in nodes:
         cpd = pe.state_counts(node)
         cpd = cpd.transpose()
         cpd_prob = cpd.div(cpd.sum(axis=1), axis=0)
-        cpd_prob = cpd_prob.fillna(0)
+        cpd_prob = cpd_prob.fillna(0.5)
         cpds[node] = cpd_prob
     except Exception as e:
         print e
-        
-print("cpds generated")
-print(cpds['match'])
+#         
+# print("cpds generated")
+#print(cpds['dec'])
+
+infer = VariableElimination(model)
+
+#mle = MaximumLikelihoodEstimator(model, df)
+#print(mle.estimate_cpd('dec'))
 # cpd = pe.state_counts('match')
 # cpd = cpd.transpose() #Helps when summing
 # #print cpd
