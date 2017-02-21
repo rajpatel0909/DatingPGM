@@ -1,7 +1,7 @@
 def getNodesFromCSV():
-    print("hello")
+    print("getting nodes from files")
     file = open("SpeedDating_discrete02.csv");
-    print(type(file))
-    for line in file.readlines():
-        array = line.split(',')
-        first_item = array[0]
+    line = file.readline()
+    nodes = line.split(',')
+    #print(type(nodes))
+    return nodes
