@@ -28,30 +28,33 @@ df = pd.read_csv("C:/Users/rajpu/workspace/DatingPGM/SpeedDating_discrete02.csv"
 file1 = open("cmd.txt");
 file2 = file.read(file1);
 #model = eval(file2)
-model = BayesianModel(getLinks.getLinksOfNodes())
+#model = BayesianModel(getLinks.getLinksOfNodes())
+
+model = BayesianModel([('goal','dec'),('met','dec'),('condtn','dec'),('int_corr','dec'),('attr1_1','dec'),('like','dec'),('sinc1_1','dec')])
+
 print(model)
 #Finding CPDS
 pe = ParameterEstimator(model, df) 
 
 nodes = getNodes.getNodesFromCSV();
  
-cpds = {}
-for node in nodes:
-    #print node
-    try:
-        cpd = pe.state_counts(node)
-        cpd = cpd.transpose()
-        cpd_prob = cpd.div(cpd.sum(axis=1), axis=0)
-        cpd_prob = cpd_prob.fillna(0.5)
-        cpds[node] = cpd_prob
-    except Exception as e:
-        print e
-#         
-# print("cpds generated")
+# cpds = {}
+# for node in nodes:
+#     #print node
+#     try:
+#         cpd = pe.state_counts(node)
+#         cpd = cpd.transpose()
+#         cpd_prob = cpd.div(cpd.sum(axis=1), axis=0)
+#         cpd_prob = cpd_prob.fillna(0.5)
+#         cpds[node] = cpd_prob
+#     except Exception as e:
+#         print e
+# #         
+print("cpds generated")
 #print(cpds['dec'])
-
+model.fit(df, MaximumLikelihoodEstimator)
 infer = VariableElimination(model)
-
+print (infer.query(['dec'],evidence={'goal':0,'met':1, 'int_corr':10, 'attr1_1':2, 'condtn':1, 'like':2, 'sinc1_1':1 }) ['dec'])
 #mle = MaximumLikelihoodEstimator(model, df)
 #print(mle.estimate_cpd('dec'))
 # cpd = pe.state_counts('match')
