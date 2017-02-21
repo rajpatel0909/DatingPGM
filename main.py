@@ -1,1 +1,2 @@
+import makeLinks
 import buildPGM
