@@ -6,6 +6,7 @@ __author__ = "rajpu&mihir"
 __date__ = "$Feb 20, 2017 10:29:20 AM$"
 
 import openpyxl
+import getNodes
 import pandas as pd 
 import numpy as np
 import math
@@ -29,11 +30,27 @@ model = eval(file2)
 #Finding CPDS
 pe = ParameterEstimator(model, df) 
  #CPD FOR NODE: LIKE
-cpd = pe.state_counts('match')
-cpd = cpd.transpose() #Helps when summing
-#print cpd
-#Baap Code to get the probabilities from the frquencies.
-cpd_prob = cpd.div(cpd.sum(axis=1), axis=0) 
-#Remove the divide b 0 error
-cpd_prob = cpd_prob.fillna(0)
-print cpd_prob
+nodes = getNodes.getNodesFromCSV();
+cpds = {}
+print(pe.state_counts('met'))
+for node in nodes:
+    print node
+    try:
+        cpd = pe.state_counts(node)
+        cpd = cpd.transpose()
+        cpd_prob = cpd.div(cpd.sum(axis=1), axis=0)
+        cpd_prob = cpd_prob.fillna(0)
+        cpds[node] = cpd_prob
+    except Exception as e:
+        print e
+        
+print("cpds generated")
+print(cpds['dec'])
+# cpd = pe.state_counts('match')
+# cpd = cpd.transpose() #Helps when summing
+# #print cpd
+# #Baap Code to get the probabilities from the frquencies.
+# cpd_prob = cpd.div(cpd.sum(axis=1), axis=0) 
+# #Remove the divide b 0 error
+# cpd_prob = cpd_prob.fillna(0)
+# print cpd_prob

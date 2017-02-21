@@ -4,4 +4,5 @@ def getNodesFromCSV():
     line = file.readline()
     nodes = line.split(',')
     #print(type(nodes))
+    nodes.pop()
     return nodes
