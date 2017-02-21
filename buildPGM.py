@@ -5,8 +5,9 @@
 __author__ = "rajpu&mihir"
 __date__ = "$Feb 20, 2017 10:29:20 AM$"
 
-import openpyxl
+#import openpyxl
 import getNodes
+import getLinks
 import pandas as pd 
 import numpy as np
 import math
@@ -23,18 +24,19 @@ from pgmpy.inference import VariableElimination
 print "Hello World"
 
 #df = pd.read_csv("C:/MyStuff/SEM2/AML/Project1/tes.csv");
-df = pd.read_csv("SpeedDating_discrete02.csv");
+df = pd.read_csv("C:/Users/rajpu/workspace/DatingPGM/SpeedDating_discrete02.csv");
 file1 = open("cmd.txt");
 file2 = file.read(file1);
-model = eval(file2)
+#model = eval(file2)
+model = BayesianModel(getLinks.getLinksOfNodes())
+print(model)
 #Finding CPDS
 pe = ParameterEstimator(model, df) 
  #CPD FOR NODE: LIKE
 nodes = getNodes.getNodesFromCSV();
 cpds = {}
-print(pe.state_counts('met'))
 for node in nodes:
-    print node
+    #print node
     try:
         cpd = pe.state_counts(node)
         cpd = cpd.transpose()
@@ -45,7 +47,7 @@ for node in nodes:
         print e
         
 print("cpds generated")
-print(cpds['dec'])
+print(cpds['match'])
 # cpd = pe.state_counts('match')
 # cpd = cpd.transpose() #Helps when summing
 # #print cpd
