@@ -41,8 +41,8 @@ print(model)
 pe = ParameterEstimator(model, df) 
 
 nodes = getNodes.getNodesFromCSV();
- 
 cpds = {}
+variableCard = {}
 for node in nodes:
     #print node
     try:
@@ -50,15 +50,15 @@ for node in nodes:
         cpd = cpd.transpose()
         cpd_prob = cpd.div(cpd.sum(axis=1), axis=0)
         cpd_prob = cpd_prob.fillna(0.5)
-        cpds[node] = cpd_prob
+        cpds[node] = cpd_prob.transpose().values.tolist()
+        variableCard[node] = len(cpds[node])
     except Exception as e:
         print e
 # #         
 print("cpds generated")
-print(cpds['match'].transpose().values.tolist())
-
-temp_cpd = TabularCPD('match', 2, cpds['match'].transpose().values.tolist(),['dec', 'dec_o'], [2, 2])
-model.add_cpds(temp_cpd)
+temp_cpd = TabularCPD('age_o', variableCard['age_o'], cpds['age_o'])
+#temp_cpd = TabularCPD('match', 2, cpds['match'].transpose().values.tolist(),['dec', 'dec_o'], [2, 2])
+#model.add_cpds(temp_cpd)
 #model.fit(df, MaximumLikelihoodEstimator)
 #infer = VariableElimination(model)
 #print("model fitted")
