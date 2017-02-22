@@ -1,7 +1,7 @@
 # To change this license header, choose License Headers in Project Properties.
 # To change this template file, choose Tools | Templates
 # and open the template in the editor.
-from traitlets.config.application import catch_config_error
+#from traitlets.config.application import catch_config_error
 
 __author__ = "rajpu&mihir"
 __date__ = "$Feb 20, 2017 10:29:20 AM$"
@@ -47,22 +47,30 @@ cpds = {}
 variableCard = {}
 
 
+
 for node in nodes:
-    #print node
     try:
         cpd = pe.state_counts(node)
         cpd = cpd.transpose()
         cpd_prob = cpd.div(cpd.sum(axis=1), axis=0)
-        #cpd_prob = cpd_prob.round(5)
-        cpd_prob = cpd_prob.fillna(0.5)
+        cpd_prob = cpd_prob.fillna(1.0/cpd_prob.shape[1])
         cpds[node] = cpd_prob.transpose().values.tolist()
-        variableCard[node] = len(cpds[node])
+        variableCard[node] = cpd_prob.shape[1]
     except Exception as e:
         #nodes.remove(node)
-        print e
+        print(node, e)
         
 # #         
 print("cpds generated")
+
+# test = pe.state_counts('match')
+# test = test.transpose()
+# test_prob = test.div(test.sum(axis=1), axis=0)
+# test_prob = test_prob.fillna(0.5)
+# print(test_prob)
+# print((test_prob[0][0]))
+
+#print(1 - cpds['fun_o'].transpose().sum(axis = 1))
 
 print("Generating list pf variablecard of parents")
 #making list of parents's variableCard
@@ -78,14 +86,20 @@ for node in nodes:
     
 print("Generating and Adding Tabular cpd")    
 
-for node in nodes:
-    try:
-        if parents.has_key(node):
-            model.add_cpds(TabularCPD(node, variableCard[node], cpds[node], parents[node], parentsCardList[node]))
-        else:
-            model.add_cpds(TabularCPD(node, variableCard[node], cpds[node]))
-    except Exception as e:
-        print e
+testNodes1 = ['match','imprelig','age_o','race_o','attr1_1','dec_o','fun1_1','career_c','imprace','fun_o','like_o','like','condtn','goal']
+for node in testNodes1:
+    if parents.has_key(node):
+        model.add_cpds(TabularCPD(node, variableCard[node], cpds[node], parents[node], parentsCardList[node]))
+    else:
+        model.add_cpds(TabularCPD(node, variableCard[node], cpds[node]))
+# for node in nodes:
+#     try:
+#         if parents.has_key(node):
+#             model.add_cpds(TabularCPD(node, variableCard[node], cpds[node], parents[node], parentsCardList[node]))
+#         else:
+#             model.add_cpds(TabularCPD(node, variableCard[node], cpds[node]))
+#     except Exception as e:
+#         print e
         
 print("Tabular cpds added to model")
 #print(cpds['fun_o'])
