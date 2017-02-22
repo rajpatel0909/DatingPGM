@@ -1,6 +1,7 @@
 # To change this license header, choose License Headers in Project Properties.
 # To change this template file, choose Tools | Templates
 # and open the template in the editor.
+from traitlets.config.application import catch_config_error
 
 __author__ = "rajpu&mihir"
 __date__ = "$Feb 20, 2017 10:29:20 AM$"
@@ -36,33 +37,67 @@ print("Parents Dictionary made")
 
 #model = BayesianModel([('dec','match'),('dec','match')])
 
-print(model)
+#print(model)
 #Finding CPDS
 pe = ParameterEstimator(model, df) 
 
 nodes = getNodes.getNodesFromCSV();
+
 cpds = {}
 variableCard = {}
+
+
 for node in nodes:
     #print node
     try:
         cpd = pe.state_counts(node)
         cpd = cpd.transpose()
         cpd_prob = cpd.div(cpd.sum(axis=1), axis=0)
+        #cpd_prob = cpd_prob.round(5)
         cpd_prob = cpd_prob.fillna(0.5)
         cpds[node] = cpd_prob.transpose().values.tolist()
         variableCard[node] = len(cpds[node])
     except Exception as e:
+        #nodes.remove(node)
         print e
+        
 # #         
 print("cpds generated")
-temp_cpd = TabularCPD('age_o', variableCard['age_o'], cpds['age_o'])
-#temp_cpd = TabularCPD('match', 2, cpds['match'].transpose().values.tolist(),['dec', 'dec_o'], [2, 2])
+
+print("Generating list pf variablecard of parents")
+#making list of parents's variableCard
+
+
+parentsCardList = {}
+for node in nodes:
+    if parents.has_key(node):
+        tempParentCardList = []
+        for parent in parents[node]:
+            tempParentCardList.append(len(cpds[parent]))
+        parentsCardList[node] = tempParentCardList
+    
+print("Generating and Adding Tabular cpd")    
+
+for node in nodes:
+    try:
+        if parents.has_key(node):
+            model.add_cpds(TabularCPD(node, variableCard[node], cpds[node], parents[node], parentsCardList[node]))
+        else:
+            model.add_cpds(TabularCPD(node, variableCard[node], cpds[node]))
+    except Exception as e:
+        print e
+        
+print("Tabular cpds added to model")
+#print(cpds['fun_o'])
+#temp_cpd = TabularCPD('age_o', variableCard['age_o'], cpds['age_o'])
+#temp_cpd = TabularCPD('match', 2, cpds['match'], ['dec', 'dec_o'], [2, 2])
 #model.add_cpds(temp_cpd)
 #model.fit(df, MaximumLikelihoodEstimator)
-#infer = VariableElimination(model)
-#print("model fitted")
-#print (infer.query(['match'],evidence={'dec':0,'dec_o':0}) ['match'])
+
+infer = VariableElimination(model)
+
+print("model fitted")
+print (infer.query(['match'],evidence={'dec':0,'dec_o':0}) ['match'])
 #mle = MaximumLikelihoodEstimator(model, df)
 #print(mle.estimate_cpd('dec'))
 # cpd = pe.state_counts('match')
