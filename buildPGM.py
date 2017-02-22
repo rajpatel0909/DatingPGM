@@ -86,20 +86,14 @@ for node in nodes:
     
 print("Generating and Adding Tabular cpd")    
 
-testNodes1 = ['match','imprelig','age_o','race_o','attr1_1','dec_o','fun1_1','career_c','imprace','fun_o','like_o','like','condtn','goal']
-for node in testNodes1:
-    if parents.has_key(node):
-        model.add_cpds(TabularCPD(node, variableCard[node], cpds[node], parents[node], parentsCardList[node]))
-    else:
-        model.add_cpds(TabularCPD(node, variableCard[node], cpds[node]))
-# for node in nodes:
-#     try:
-#         if parents.has_key(node):
-#             model.add_cpds(TabularCPD(node, variableCard[node], cpds[node], parents[node], parentsCardList[node]))
-#         else:
-#             model.add_cpds(TabularCPD(node, variableCard[node], cpds[node]))
-#     except Exception as e:
-#         print e
+for node in nodes:
+    try:
+        if parents.has_key(node):
+            model.add_cpds(TabularCPD(node, variableCard[node], cpds[node], parents[node], parentsCardList[node]))
+        else:
+            model.add_cpds(TabularCPD(node, variableCard[node], cpds[node]))
+    except Exception as e:
+        print e
         
 print("Tabular cpds added to model")
 #print(cpds['fun_o'])
@@ -111,7 +105,8 @@ print("Tabular cpds added to model")
 infer = VariableElimination(model)
 
 print("model fitted")
-print (infer.query(['match'],evidence={'dec':0,'dec_o':0}) ['match'])
+print(model.check_model())
+#print (infer.query(['match'],evidence={'dec':0,'dec_o':0}) ['match'])
 #mle = MaximumLikelihoodEstimator(model, df)
 #print(mle.estimate_cpd('dec'))
 # cpd = pe.state_counts('match')
