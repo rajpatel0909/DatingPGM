@@ -29,7 +29,9 @@ file1 = open("cmd.txt");
 file2 = file.read(file1);
 #model = eval(file2)
 model = BayesianModel(getLinks.getLinksOfNodes())
-
+print("Making parents dictionary")
+parents = getLinks.getParents()
+print("Parents Dictionary made")
 #model = BayesianModel([('goal','dec'),('met','dec'),('condtn','dec'),('int_corr','dec'),('attr1_1','dec'),('like','dec'),('sinc1_1','dec'),('amb1_1','dec')])
 
 #model = BayesianModel([('dec','match'),('dec','match')])
