@@ -1,7 +1,7 @@
 import xlrd
 
 def getLinksOfNodes():
-    file = xlrd.open_workbook('tes.xlsx')
+    file = xlrd.open_workbook('newLinks.xlsx')
     sheet = file.sheet_by_index(1)
     links = []
     
@@ -18,7 +18,7 @@ def getLinksOfNodes():
     return links
 
 def getParents():
-    file = xlrd.open_workbook('tes.xlsx')
+    file = xlrd.open_workbook('newLinks.xlsx')
     sheet = file.sheet_by_index(1)
     parents = {}
     childList = []
