@@ -2,6 +2,7 @@
 # To change this template file, choose Tools | Templates
 # and open the template in the editor.
 #from traitlets.config.application import catch_config_error
+from numba.typing.enumdecl import infer
 
 __author__ = "rajpu&mihir"
 __date__ = "$Feb 20, 2017 10:29:20 AM$"
@@ -86,27 +87,32 @@ for node in nodes:
     
 print("Generating and Adding Tabular cpd")    
 
-for node in nodes:
-    try:
-        if parents.has_key(node):
-            model.add_cpds(TabularCPD(node, variableCard[node], cpds[node], parents[node], parentsCardList[node]))
-        else:
-            model.add_cpds(TabularCPD(node, variableCard[node], cpds[node]))
-    except Exception as e:
-        print e
+# for node in nodes:
+#     try:
+#         if parents.has_key(node):
+#             model.add_cpds(TabularCPD(node, variableCard[node], cpds[node], parents[node], parentsCardList[node]))
+#         else:
+#             model.add_cpds(TabularCPD(node, variableCard[node], cpds[node]))
+#     except Exception as e:
+#         print e
         
 print("Tabular cpds added to model")
 #print(cpds['fun_o'])
 #temp_cpd = TabularCPD('age_o', variableCard['age_o'], cpds['age_o'])
 #temp_cpd = TabularCPD('match', 2, cpds['match'], ['dec', 'dec_o'], [2, 2])
 #model.add_cpds(temp_cpd)
-#model.fit(df, MaximumLikelihoodEstimator)
+model.fit(df, MaximumLikelihoodEstimator)
 
 infer = VariableElimination(model)
 
 print("model fitted")
 print(model.check_model())
-#print (infer.query(['match'],evidence={'dec':0,'dec_o':0}) ['match'])
+
+print(model.get_cpds('match'))
+print(model.active_trail_nodes('match'))
+
+#print (infer.query(['samerace'],evidence={'race':1,'race_o':1,'int_corr':1}) ['samerace'])
+print(infer.query(['samerace']))
 #mle = MaximumLikelihoodEstimator(model, df)
 #print(mle.estimate_cpd('dec'))
 # cpd = pe.state_counts('match')
