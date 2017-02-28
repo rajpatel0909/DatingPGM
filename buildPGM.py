@@ -9,7 +9,6 @@ __date__ = "$Feb 20, 2017 10:29:20 AM$"
 
 #import openpyxl
 import multiprocessing
-import findInfer
 import time
 import getNodes
 import getLinks
@@ -24,6 +23,7 @@ from pgmpy.factors.discrete import TabularCPD
 from pgmpy.estimators import MaximumLikelihoodEstimator
 from pgmpy.estimators import ParameterEstimator
 from pgmpy.inference import VariableElimination
+from pgmpy.inference import BeliefPropagation
 from pgmpy.sampling import BayesianModelSampling
 
 def findInfer1(infer):
@@ -44,6 +44,10 @@ def findInfer4(infer):
 
 def findInfer5(infer):
     print(infer.query(['dec'],evidence={'attr':0,'sinc':0,'intel':0,'fun':0,'like':0,'imprace':1,'imprelig':1, 'condtn':1,'goal':1,'attr1_1':0,'sinc1_1':0,'intel1_1':0,'fun1_1':0,'amb1_1':0,'shar1_1':1,'met':1}) ['dec'])
+    return
+
+def findInfer6(infer):
+    print(infer.query(['dec_o'],evidence={'pf_o_att':0,'pf_o_sin':0,'pf_o_int':0,'pf_o_fun':0,'like_o':0,'career_c':1,'field_cd':1, 'go_out':1,'date':1,'attr_o':0,'sinc_o':0,'intel_o':0,'fun_o':0,'age':1}) ['dec_o'])
     return
 
 if __name__ == '__main__':
@@ -129,6 +133,11 @@ if __name__ == '__main__':
     
     infer = VariableElimination(model)
     
+    #infer.map_query((['dec'],evidence={'attr':0,'sinc':0,'intel':0,'fun':0,'like':0,'imprace':1,'imprelig':1, 'condtn':1,'goal':1,'attr1_1':0,'sinc1_1':0,'intel1_1':0,'fun1_1':0,'amb1_1':0,'shar1_1':1,'met':1}) ['dec']))
+    #infer = BeliefPropagation(model)
+    
+    print(infer.map_query(variables = ['match'], evidence={'dec':0, 'dec_o':0}))
+    
     print("model fitted")
     print(model.check_model())
     
@@ -139,6 +148,7 @@ if __name__ == '__main__':
     p3 = multiprocessing.Process(target=findInfer3, args=(infer,))
     p4 = multiprocessing.Process(target=findInfer4, args=(infer,))
     p5 = multiprocessing.Process(target=findInfer5, args=(infer,))
+    p6 = multiprocessing.Process(target=findInfer6, args=(infer,))
     
     
 #     inference = BayesianModelSampling(model)
@@ -150,6 +160,7 @@ if __name__ == '__main__':
     p3.start()
     p4.start()
     p5.start()
+    p6.start()
     #print(infer.query(['match'],evidence={'race':1,'race_o':1,'attr1_1':0,'sinc1_1':0,'intel1_1':0,'fun1_1':0,'amb1_1':0,'shar1_1':1,'imprace':5,'imprelig':5,'gender':0,'like':1,'like_o':1}) ['match'])
     #print(infer.query(['goal'],evidence={'gender':1,'dec':1,'attr2_1':0,'sinc2_1':0,'intel2_1':0,'fun2_1':0,'amb2_1':0,'shar2_1':1,'race':1,'race_o':1,'attr1_1':0,'sinc1_1':0,'intel1_1':0,'fun1_1':0,'amb1_1':0,'shar1_1':0,'imprace':5,'imprelig':5}) ['goal'])
     #print(infer.query(['age'], evidence={'match':1}) ['age'])
