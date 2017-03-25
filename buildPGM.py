@@ -55,6 +55,9 @@ if __name__ == '__main__':
     
     #df = pd.read_csv("C:/MyStuff/SEM2/AML/Project1/tes.csv");
     df = pd.read_csv("newData.csv");
+    
+    
+    
     file1 = open("cmd.txt");
     file2 = file.read(file1);
     #model = eval(file2)
@@ -136,7 +139,7 @@ if __name__ == '__main__':
     #infer.map_query((['dec'],evidence={'attr':0,'sinc':0,'intel':0,'fun':0,'like':0,'imprace':1,'imprelig':1, 'condtn':1,'goal':1,'attr1_1':0,'sinc1_1':0,'intel1_1':0,'fun1_1':0,'amb1_1':0,'shar1_1':1,'met':1}) ['dec']))
     #infer = BeliefPropagation(model)
     
-    print(infer.map_query(variables = ['match'], evidence={'dec':0, 'dec_o':0}))
+    #print(infer.map_query(variables = ['match'], evidence={'dec':0, 'dec_o':0}))
     
     print("model fitted")
     print(model.check_model())
