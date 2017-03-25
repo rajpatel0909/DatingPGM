@@ -3,6 +3,7 @@
 # and open the template in the editor.
 #from traitlets.config.application import catch_config_error
 from numba.typing.enumdecl import infer
+import neuralNet
 
 __author__ = "rajpu&mihir"
 __date__ = "$Feb 20, 2017 10:29:20 AM$"
@@ -56,8 +57,8 @@ if __name__ == '__main__':
     #df = pd.read_csv("C:/MyStuff/SEM2/AML/Project1/tes.csv");
     df = pd.read_csv("newData.csv");
     
-    
-    
+    neuralNet.NeuralNetwork()
+    exit()
     file1 = open("cmd.txt");
     file2 = file.read(file1);
     #model = eval(file2)
