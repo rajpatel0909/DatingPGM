@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
-from blaze.expr.expressions import shape
+#from blaze.expr.expressions import shape
+#import matplotlib.pyplot as plt
 
-
-def NeuralNetwork():
+def trainNeuralNetwork():
     #trainX, trainY, testX, testY, ImageX, ImageY
     print "Neural Network"
     
@@ -15,18 +15,18 @@ def NeuralNetwork():
     trainY = dataY[0:4500]
     validX = dataX[4501:5001]
     validY = dataY[4501:5001]
-    testX = dataX[5001:]
-    testY = dataY[5001:]
+    testX = dataX[5001:5501]
+    testY = dataY[5001:5501]
     
-    print shape(trainX)
-    print shape(trainY)
-    print shape(validX)
-    print shape(validY)
-    print shape(testX)
-    print shape(testY)
+#     print shape(trainX)
+#     print shape(trainY)
+#     print shape(validX)
+#     print shape(validY)
+#     print shape(testX)
+#     print shape(testY)
     
     
-    eta2List = [0.03]
+    eta2List = [0.003]
     maxCorrect = 0
     maxE1 = 0
     valmaxCorrect = 0
@@ -40,7 +40,6 @@ def NeuralNetwork():
     count2 = 0
     allErrors = np.zeros(shape=(50,1))
     for eta in eta2List:
-        #print "count2 = ",count2
         count2 += 1
         N = 1
         M = 12
@@ -84,7 +83,7 @@ def NeuralNetwork():
                     delta1[i,:] = np.multiply(temp,dw2[i,:])
                 
                 
-                #allErrors[i*N:i*N+N,:] = -np.sum(np.multiply((y - t),(a2)), axis=1).reshape(N,1)
+                allErrors[i*N:i*N+N,:] = -np.sum(np.multiply((y - t),(a2)), axis=1).reshape(N,1)
                 w1 = np.subtract(w1, np.multiply(eta, np.dot(np.transpose(x), delta1)))
                 b1 = b1 - eta*delta1
                 
@@ -98,7 +97,7 @@ def NeuralNetwork():
             tt = np.zeros(shape=(N,K))
             for j in range(0,N):
                 k = i*N + j
-                tt[j][int(trainY[k])] = 1
+                tt[j][trainY[k]] = 1
             
             #layer1
             at1 = np.dot(xt,w1) + b1
@@ -119,7 +118,7 @@ def NeuralNetwork():
                 correct += 1
             else:
                 wrong += 1 
-                
+         
         if(maxCorrect < correct):
             maxCorrect = correct
             maxE1 = eta
@@ -133,7 +132,7 @@ def NeuralNetwork():
             for j in range(0,1):
                 k = i*N + j
                 temp1 = int(validY[k])
-                tt[j][int(validY[k])] = 1
+                tt[j][validY[k]] = 1
              
             #layer1
             at1 = np.dot(xt,w1) + b1
@@ -162,13 +161,13 @@ def NeuralNetwork():
                 
                 
         #test prdicting values
-        testyt = np.zeros(shape=(566,11))
-        for i in range(0,566):
+        testyt = np.zeros(shape=(500,11))
+        for i in range(0,500):
             xt = testX[(i*N):(i*N+N)]
             tt = np.zeros(shape=(N,K))
             for j in range(0,1):
                 k = i*N + j
-                tt[j][int(testY[k])] = 1
+                tt[j][testY[k]] = 1
             
             #layer1
             at1 = np.dot(xt,w1) + b1
@@ -179,10 +178,10 @@ def NeuralNetwork():
             expat2 = np.exp(at2)
             testyt[i*N:i*N+N,:] = expat2/(np.sum(expat2, axis=1).reshape(N,1))
     
-        testpredictedValues = np.zeros(shape=(566,1))
+        testpredictedValues = np.zeros(shape=(500,1))
         testcorrect = 0
         testwrong = 0
-        for i in range(0,566):
+        for i in range(0,500):
             preIndex = np.where(testyt[i,:] == testyt[i,:].max())[0]  
             testpredictedValues[i][0] = preIndex
             if preIndex == testY[i]:
@@ -194,84 +193,97 @@ def NeuralNetwork():
             testmaxCorrect = testcorrect
             testmaxE1 = eta 
             
-        #USPS prdicting values
-#         imgyt = np.zeros(shape=(20000,10))
-#         for i in range(0,20):
-#             xt = ImageX[(i*N):(i*N+N)]
+        
+                
+#         print "Accuracy of Training Data ", (maxCorrect/4500.0)
+#         print "Accuracy of Test Data ", (testmaxCorrect/500.0)
+#         print "Accuracy of Valid Data ", (valmaxCorrect/500.0)
+    
+        
+#         graphX = list(range(50))        
+#         plt.figure(1)
+#         plt.plot(graphX,allErrors)
+#         plt.xlabel("data points")
+#         plt.ylabel("errors")
+#         plt.title("change in error")
+#         plt.show()
+#         
+#         graphX = list(range(4500))        
+#         plt.figure(2)
+#         plt.plot(graphX, predictedValues,'r--', graphX, trainY, 'b--')
+#         plt.xlabel("data points")
+#         plt.ylabel("Target and Predicted values")
+#         plt.title("training data")
+#         plt.show()
+#         
+#         graphX = list(range(500))        
+#         plt.figure(3)
+#         plt.plot(graphX, valpredictedValues,'r--', graphX, validY, 'b--')
+#         plt.xlabel("data points")
+#         plt.ylabel("Target and Predicted values")
+#         plt.title("valid data")
+#         plt.show()
+#     
+#         graphX = list(range(566))        
+#         plt.figure(4)
+#         plt.plot(graphX, testpredictedValues,'r--', graphX, testY, 'b--')
+#         plt.xlabel("data points")
+#         plt.ylabel("Target and Predicted values")
+#         plt.title("test data")
+#         plt.show()
+        
+        return [w1,w2]
+       
+
+def predictNN(w, x):
+    N = 1
+    M = 12
+    D = 17
+    K = 11
+    w1 = w[0]
+    w2 = w[1]
+    b1 = np.ones(shape=(N,M))
+    b2 = np.ones(shape=(N,K))
+    
+    #layer1
+    at1 = np.dot(x,w1) + b1
+    zt = 1/(1 + np.exp(-at1))
+    
+    #layer2
+    at2 = np.dot(zt,w2) + b2
+    expat2 = np.exp(at2)
+    y = expat2/(np.sum(expat2, axis=1).reshape(N,1))
+    return np.argmax(y)
+    
+#     yt = np.zeros(shape=(4500,11))
+#         for i in range(0,iterations):
+#             xt = trainX[(i*N):(i*N+N)]
 #             tt = np.zeros(shape=(N,K))
 #             for j in range(0,N):
 #                 k = i*N + j
-#                 tt[j][int(ImageY[k][0])] = 1
+#                 tt[j][trainY[k]] = 1
 #             
 #             #layer1
 #             at1 = np.dot(xt,w1) + b1
 #             zt = 1/(1 + np.exp(-at1))
 #             
 #             #layer2
-#             at2 = np.dot(zt,w2) + b2    
+#             at2 = np.dot(zt,w2) + b2
 #             expat2 = np.exp(at2)
-#             imgyt[i*N:i*N+N,:] = expat2/(np.sum(expat2, axis=1).reshape(N,1))
+#             yt[i*N:i*N+N,:] = expat2/(np.sum(expat2, axis=1).reshape(N,1))
 #     
-#         imgpredictedValues = np.zeros(shape=(20000,1))
-#         imgcorrect = 0
-#         imgwrong = 0
-#         for i in range(0,20000):
-#             preIndex = np.where(imgyt[i,:] == imgyt[i,:].max())[0]  
-#             imgpredictedValues[i][0] = preIndex
-#             if preIndex == ImageY[i]:
-#                 imgcorrect += 1
+#         predictedValues = np.zeros(shape=(4500,1))
+#         correct = 0
+#         wrong = 0
+#         for i in range(0,4500):
+#             preIndex = np.where(yt[i,:] == yt[i,:].max())[0]  
+#             predictedValues[i][0] = preIndex
+#             if preIndex == trainY[i]:
+#                 correct += 1
 #             else:
-#                 imgwrong += 1 
-#             
-#         if(imgmaxCorrect < imgcorrect):
-#             imgmaxCorrect = imgcorrect
-#             imgmaxE1 = eta 
-                
-                
-        print "Accuracy of Training Data ", (maxCorrect/4500)
-        print "Accuracy of Test Data ", (testmaxCorrect/500)
-        print "Accuracy of Valid Data ", (valmaxCorrect/566)
-#         print "Accuracy of USPS Data ", (imgmaxCorrect/20000)
-    
-        """
-        graphX = list(range(50))        
-        plt.figure(1)
-        plt.plot(graphX,allErrors)
-        plt.xlabel("data points")
-        plt.ylabel("errors")
-        plt.title("change in error")
-        plt.show()
-        
-        graphX = list(range(50000))        
-        plt.figure(2)
-        plt.plot(graphX, predictedValues,'r--', graphX, trainY, 'b--')
-        plt.xlabel("data points")
-        plt.ylabel("Target and Predicted values")
-        plt.title("Singal Neural Network training data")
-        plt.show()
-        
-        graphX = list(range(10000))        
-        plt.figure(3)
-        plt.plot(graphX, valpredictedValues,'r--', graphX, validY, 'b--')
-        plt.xlabel("data points")
-        plt.ylabel("Target and Predicted values")
-        plt.title("Singal Neural Network test data")
-        plt.show()
-    
-        graphX = list(range(10000))        
-        plt.figure(4)
-        plt.plot(graphX, testpredictedValues,'r--', graphX, testY, 'b--')
-        plt.xlabel("data points")
-        plt.ylabel("Target and Predicted values")
-        plt.title("Singal Neural Network valid data")
-        plt.show()
-        
-        graphX = list(range(20000))        
-        plt.figure(5)
-        plt.plot(graphX, imgpredictedValues,'r--', graphX, ImageY, 'b--')
-        plt.xlabel("data points")
-        plt.ylabel("Target and Predicted values")
-        plt.title("Singal Neural Network USPS data")
-        plt.show()
-        """
-        
+#                 wrong += 1 
+#          
+#         if(maxCorrect < correct):
+#             maxCorrect = correct
+#             maxE1 = eta
+#             maxE2 = eta     

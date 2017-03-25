@@ -27,38 +27,48 @@ from pgmpy.inference import VariableElimination
 from pgmpy.inference import BeliefPropagation
 from pgmpy.sampling import BayesianModelSampling
 
-def findInfer1(infer):
+def findMatch(infer):
     print(infer.query(['match'],evidence={'race':1,'race_o':1,'attr1_1':0,'sinc1_1':0,'intel1_1':0,'fun1_1':0,'amb1_1':0,'shar1_1':1,'imprace':5,'imprelig':5,'gender':0,'like':1,'like_o':1}) ['match'])
     return
 
-def findInfer2(infer):
+def findGoal(infer):
     print(infer.query(['goal'],evidence={'gender':1,'dec':1,'attr2_1':0,'sinc2_1':0,'intel2_1':0,'fun2_1':0,'amb2_1':0,'shar2_1':1,'race':1,'race_o':1,'attr1_1':0,'sinc1_1':0,'intel1_1':0,'fun1_1':0,'amb1_1':0,'shar1_1':0,'imprace':5,'imprelig':5}) ['goal'])
     return
 
-def findInfer3(infer):
+def findAge(infer):
     print(infer.query(['age'],evidence={'attr2_1':0,'sinc2_1':0,'intel2_1':0,'fun2_1':0,'amb2_1':0,'shar2_1':1,'attr_o':2,'sinc_o':2,'intel_o':2,'fun_o':2,'like_o':2,'match':1}) ['age'])
     return
 
-def findInfer4(infer):
+def findGender(infer):
     print(infer.query(['gender'],evidence={'attr2_1':0,'sinc2_1':0,'intel2_1':0,'fun2_1':0,'amb2_1':0,'shar2_1':1,'imprace':1,'imprelig':1,'goal':1,'attr1_1':0,'sinc1_1':0,'intel1_1':0,'fun1_1':0,'amb1_1':0,'shar1_1':1}) ['gender'])
     return
 
-def findInfer5(infer):
+def findDecn(infer, nnw):
+    x = [1,1,6,7,6,7,7,5,7,7,7,9,7,8,7,1,8]
+    i = findIntcorr(nnw, x)
+    print(infer.query(['dec'],evidence={'int_corr':2,'attr':0,'sinc':0,'intel':0,'fun':0,'like':0,'imprace':1,'imprelig':1, 'condtn':1,'goal':1,'attr1_1':0,'sinc1_1':0,'intel1_1':0,'fun1_1':0,'amb1_1':0,'shar1_1':1,'met':1}) ['dec'])
+    return
+
+def findDec(infer):
     print(infer.query(['dec'],evidence={'attr':0,'sinc':0,'intel':0,'fun':0,'like':0,'imprace':1,'imprelig':1, 'condtn':1,'goal':1,'attr1_1':0,'sinc1_1':0,'intel1_1':0,'fun1_1':0,'amb1_1':0,'shar1_1':1,'met':1}) ['dec'])
     return
 
-def findInfer6(infer):
+def findDeco(infer):
     print(infer.query(['dec_o'],evidence={'pf_o_att':0,'pf_o_sin':0,'pf_o_int':0,'pf_o_fun':0,'like_o':0,'career_c':1,'field_cd':1, 'go_out':1,'date':1,'attr_o':0,'sinc_o':0,'intel_o':0,'fun_o':0,'age':1}) ['dec_o'])
     return
 
+def findIntcorr(nnw, x):
+    return neuralNet.predictNN(nnw, x)
+    
 if __name__ == '__main__':
     print "Hello World"
     
     #df = pd.read_csv("C:/MyStuff/SEM2/AML/Project1/tes.csv");
     df = pd.read_csv("newData.csv");
     
-    neuralNet.NeuralNetwork()
-    exit()
+    nnw = neuralNet.trainNeuralNetwork()
+    
+    
     file1 = open("cmd.txt");
     file2 = file.read(file1);
     #model = eval(file2)
@@ -140,19 +150,20 @@ if __name__ == '__main__':
     #infer.map_query((['dec'],evidence={'attr':0,'sinc':0,'intel':0,'fun':0,'like':0,'imprace':1,'imprelig':1, 'condtn':1,'goal':1,'attr1_1':0,'sinc1_1':0,'intel1_1':0,'fun1_1':0,'amb1_1':0,'shar1_1':1,'met':1}) ['dec']))
     #infer = BeliefPropagation(model)
     
-    #print(infer.map_query(variables = ['match'], evidence={'dec':0, 'dec_o':0}))
+    print(infer.map_query(variables = ['match'], evidence={'dec':0, 'dec_o':0}))
     
     print("model fitted")
     print(model.check_model())
     
     #findInfer.findInfer1(infer)
     
-    p1 = multiprocessing.Process(target=findInfer1, args=(infer,))
-    p2 = multiprocessing.Process(target=findInfer2, args=(infer,))
-    p3 = multiprocessing.Process(target=findInfer3, args=(infer,))
-    p4 = multiprocessing.Process(target=findInfer4, args=(infer,))
-    p5 = multiprocessing.Process(target=findInfer5, args=(infer,))
-    p6 = multiprocessing.Process(target=findInfer6, args=(infer,))
+    p1 = multiprocessing.Process(target=findMatch, args=(infer,))
+    p2 = multiprocessing.Process(target=findGoal, args=(infer,))
+    p3 = multiprocessing.Process(target=findAge, args=(infer,))
+    p4 = multiprocessing.Process(target=findGender, args=(infer,))
+    p55 = multiprocessing.Process(target=findDec, args=(infer,))
+    p5 = multiprocessing.Process(target=findDecn(infer, nnw))
+    p6 = multiprocessing.Process(target=findDeco, args=(infer,))
     
     
 #     inference = BayesianModelSampling(model)
@@ -164,6 +175,7 @@ if __name__ == '__main__':
     p3.start()
     p4.start()
     p5.start()
+    p55.start()
     p6.start()
     #print(infer.query(['match'],evidence={'race':1,'race_o':1,'attr1_1':0,'sinc1_1':0,'intel1_1':0,'fun1_1':0,'amb1_1':0,'shar1_1':1,'imprace':5,'imprelig':5,'gender':0,'like':1,'like_o':1}) ['match'])
     #print(infer.query(['goal'],evidence={'gender':1,'dec':1,'attr2_1':0,'sinc2_1':0,'intel2_1':0,'fun2_1':0,'amb2_1':0,'shar2_1':1,'race':1,'race_o':1,'attr1_1':0,'sinc1_1':0,'intel1_1':0,'fun1_1':0,'amb1_1':0,'shar1_1':0,'imprace':5,'imprelig':5}) ['goal'])
