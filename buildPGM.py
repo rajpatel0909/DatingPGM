@@ -5,7 +5,7 @@
 from numba.typing.enumdecl import infer
 import neuralNet
 
-__author__ = "rajpu&mihir"
+__author__ = "raj&mihir"
 __date__ = "$Feb 20, 2017 10:29:20 AM$"
 
 #import openpyxl
@@ -19,20 +19,28 @@ import math
 import matplotlib.pyplot as plt
 from numpy.linalg import inv
 import pgmpy
-from pgmpy.models import BayesianModel
+#from pgmpy.models import BayesianModel
 from pgmpy.factors.discrete import TabularCPD
 from pgmpy.estimators import MaximumLikelihoodEstimator
 from pgmpy.estimators import ParameterEstimator
 from pgmpy.inference import VariableElimination
 from pgmpy.inference import BeliefPropagation
 from pgmpy.sampling import BayesianModelSampling
+from pgmpy.models.BayesianModel import BayesianModel
+#from pgmpy.inference import GibbsSampling
+#from pgmpy.inference import Sampling 
+from pgmpy.sampling import GibbsSampling
+from pgmpy.sampling import HamiltonianMC as HMC, LeapFrog, GradLogPDFGaussian
+from pgmpy.factors.continuous import JointGaussianDistribution as JGD
+
+from scipy.stats import norm
 
 def findMatch(infer):
     print(infer.query(['match'],evidence={'race':1,'race_o':1,'attr1_1':0,'sinc1_1':0,'intel1_1':0,'fun1_1':0,'amb1_1':0,'shar1_1':1,'imprace':5,'imprelig':5,'gender':0,'like':1,'like_o':1}) ['match'])
     return
 
 def findGoal(infer):
-    print(infer.query(['goal'],evidence={'gender':1,'dec':1,'attr2_1':0,'sinc2_1':0,'intel2_1':0,'fun2_1':0,'amb2_1':0,'shar2_1':1,'race':1,'race_o':1,'attr1_1':0,'sinc1_1':0,'intel1_1':0,'fun1_1':0,'amb1_1':0,'shar1_1':0,'imprace':5,'imprelig':5}) ['goal'])
+    print(infer.query(['goal'],evidence={'samerace':1,'race_o':2,'race':2,'condtn':1,'int_corr':2,'dec':0,'attr1_1':1,'sinc1_1':1,'intel1_1':1,'fun1_1':1,'amb1_1':0,'shar1_1':0,'imprace':1,'imprelig':1,'met':1,'gender':0,'age':2,'attr2_1':1,'sinc2_1':0,'intel2_1':1,'fun2_1':1,'amb2_1':0,'shar2_1':0,'dec_o':0,'match':0,'attr_o':2,'sinc_o':2,'intel_o':2,'fun_o':2,'like_o':2,'career_c':1,'field_cd':1,'date':5,'go_out':1,'pf_o_att':2,'pf_o_sin':1,'pf_o_int':1,'pf_o_fun':1,'pf_o_amb':0,'pf_o_sha':0,'age_o':3,'attr':2,'sinc':2,'intel':2,'fun':2,'like':2}) ['goal'])
     return
 
 def findAge(infer):
@@ -40,7 +48,7 @@ def findAge(infer):
     return
 
 def findGender(infer):
-    print(infer.query(['gender'],evidence={'attr2_1':0,'sinc2_1':0,'intel2_1':0,'fun2_1':0,'amb2_1':0,'shar2_1':1,'imprace':1,'imprelig':1,'goal':1,'attr1_1':0,'sinc1_1':0,'intel1_1':0,'fun1_1':0,'amb1_1':0,'shar1_1':1}) ['gender'])
+    print(infer.query(['gender'],evidence={'samerace':1,'race_o':2,'race':2,'condtn':1,'int_corr':2,'dec':0,'attr1_1':1,'sinc1_1':1,'intel1_1':1,'fun1_1':1,'amb1_1':0,'shar1_1':0,'imprace':1,'imprelig':1,'met':1,'goal':1,'age':2,'attr2_1':1,'sinc2_1':0,'intel2_1':1,'fun2_1':1,'amb2_1':0,'shar2_1':0,'dec_o':0,'match':0,'attr_o':2,'sinc_o':2,'intel_o':2,'fun_o':2,'like_o':2,'career_c':1,'field_cd':1,'date':5,'go_out':1,'pf_o_att':2,'pf_o_sin':1,'pf_o_int':1,'pf_o_fun':1,'pf_o_amb':0,'pf_o_sha':0,'age_o':3,'attr':2,'sinc':2,'intel':2,'fun':2,'like':2}) ['gender'])
     return
 
 def findDecn(infer, nnw):
@@ -65,7 +73,16 @@ if __name__ == '__main__':
     
     #df = pd.read_csv("C:/MyStuff/SEM2/AML/Project1/tes.csv");
     df = pd.read_csv("newData.csv");
+    #
     
+    mean = {}
+    entropy = {}
+    for i in range(df.shape[1]):
+        entropy[list(df[[i]])[0]] = -1 * np.sum(norm.logpdf(df[[i]]))/df.shape[0]
+        mean[list(df[[i]])[0]] = np.mean(df[[i]])
+        
+    
+    #uncomment this
     nnw = neuralNet.trainNeuralNetwork()
     
     
@@ -86,9 +103,10 @@ if __name__ == '__main__':
     
     nodes = getNodes.getNodesFromCSV();
     
+    
+    
     cpds = {}
     variableCard = {}
-    
     
     
     for node in nodes:
@@ -139,6 +157,30 @@ if __name__ == '__main__':
             print e
             
     print("Tabular cpds added to model")
+    
+    
+    
+    inference = BayesianModelSampling(model)
+    normalSamples = inference.forward_sample(size=5000, return_type='dataframe')
+    
+    smean = {}
+    sentropy = {}
+    for i in range(normalSamples.shape[1]):
+        sentropy[list(normalSamples[[i]])[0]] = -1 * np.sum(norm.logpdf(normalSamples[[i]]))/normalSamples.shape[0]
+        smean[list(normalSamples[[i]])[0]] = np.mean(normalSamples[[i]])
+    
+    relEntropy = {}
+    
+    for k in sentropy.keys():
+        relEntropy[k] = sentropy[k] - entropy[k]
+        
+    
+    
+    #model.fit(df, MaximumLikelihoodEstimator)
+    
+#     gibbs_chain = GibbsSampling(model)
+#     gibbs_chain.sample(size=2)
+    
     #print(cpds['fun_o'])
     #temp_cpd = TabularCPD('age_o', variableCard['age_o'], cpds['age_o'])
     #temp_cpd = TabularCPD('match', 2, cpds['match'], ['dec', 'dec_o'], [2, 2])
@@ -150,7 +192,17 @@ if __name__ == '__main__':
     #infer.map_query((['dec'],evidence={'attr':0,'sinc':0,'intel':0,'fun':0,'like':0,'imprace':1,'imprelig':1, 'condtn':1,'goal':1,'attr1_1':0,'sinc1_1':0,'intel1_1':0,'fun1_1':0,'amb1_1':0,'shar1_1':1,'met':1}) ['dec']))
     #infer = BeliefPropagation(model)
     
-    print(infer.map_query(variables = ['match','dec','dec_o'], evidence={'pf_o_att':0,'pf_o_sin':0,'pf_o_int':0,'pf_o_fun':0,'pf_o_amb':0,'pf_o_sha':0,'attr':0,'sinc':0,'intel':0,'fun':0,'like':0,'career_c':1,'field_cd':1,'go_out':1,'date':1,'gender':1,'attr2_1':0,'sinc2_1':0,'intel2_1':0,'fun2_1':0,'amb2_1':0,'shar2_1':1,'race':1,'race_o':1,'attr1_1':0,'sinc1_1':0,'intel1_1':0,'fun1_1':0,'amb1_1':0,'shar1_1':0,'imprace':5,'imprelig':5,'samerace':0,'int_corr':2,'met':1,'goal':1,'age':1,'age_o':1}))
+    #print(infer.map_query(variables = [],                                                                evidence={'match':1,'dec':1,'dec_o':1,'pf_o_att':0,'pf_o_sin':0,'pf_o_int':0,'pf_o_fun':0,'pf_o_amb':0,'pf_o_sha':0,'attr':0,'sinc':0,'intel':0,'fun':0,'like':0,'career_c':1,'field_cd':1,'go_out':1,'date':1,'gender':1,'attr2_1':0,'sinc2_1':0,'intel2_1':0,'fun2_1':0,'amb2_1':0,'shar2_1':1,'race':1,'race_o':1,'attr1_1':0,'sinc1_1':0,'intel1_1':0,'fun1_1':0,'amb1_1':0,'shar1_1':0,'imprace':5,'imprelig':5,'samerace':0,'int_corr':2,'met':1,'goal':1,'age':1,'age_o':1}))
+    #print(infer.map_query(variables = [], evidence={'samerace':1,'race_o':2,'race':2,'condtn':1,'int_corr':2,'dec':0,'attr1_1':1,'sinc1_1':1,'intel1_1':1,'fun1_1':1,'amb1_1':0,'shar1_1':0,'imprace':1,'imprelig':1,'met':1,'goal':1,'gender':0,'age':2,'attr2_1':1,'sinc2_1':0,'intel2_1':1,'fun2_1':1,'amb2_1':0,'shar2_1':0,'dec_o':0,'match':0,'attr_o':2,'sinc_o':2,'intel_o':2,'fun_o':2,'like_o':2,'career_c':1,'field_cd':1,'date':5,'go_out':1,'pf_o_att':2,'pf_o_sin':1,'pf_o_int':1,'pf_o_fun':1,'pf_o_amb':0,'pf_o_sha':0,'age_o':3,'attr':2,'sinc':2,'intel':2,'fun':2,'like':2}))
+    print(infer.map_query(variables = ['pf_o_att','pf_o_sin','pf_o_int','pf_o_fun','pf_o_amb','pf_o_sha'], evidence={'samerace':1,'race_o':2,'race':2,'condtn':0,'int_corr':2,'dec':0,'attr1_1':1,'sinc1_1':1,'intel1_1':1,'fun1_1':1,'amb1_1':0,'shar1_1':0,'imprace':1,'imprelig':1,'met':1,'goal':1,'gender':0,'age':2,'attr2_1':1,'sinc2_1':0,'intel2_1':1,'fun2_1':1,'amb2_1':0,'shar2_1':0,'dec_o':0,'match':0,'attr_o':0,'sinc_o':0,'intel_o':0,'fun_o':0,'like_o':0,'career_c':1,'field_cd':1,'date':5,'go_out':1,'age_o':3,'attr':2,'sinc':2,'intel':2,'fun':2,'like':2}))
+    
+    print(infer.map_query(variables = ['attr_o','sinc_o','intel_o','fun_o','like_o'], evidence={'samerace':1,'race_o':2,'race':2,'condtn':1,'int_corr':2,'dec':0,'attr1_1':1,'sinc1_1':1,'intel1_1':1,'fun1_1':1,'amb1_1':0,'shar1_1':0,'imprace':1,'imprelig':1,'met':1,'goal':1,'gender':0,'age':2,'attr2_1':1,'sinc2_1':0,'intel2_1':1,'fun2_1':1,'amb2_1':0,'shar2_1':0,'dec_o':0,'match':0,'career_c':1,'field_cd':1,'date':5,'go_out':1,'pf_o_att':2,'pf_o_sin':1,'pf_o_int':1,'pf_o_fun':1,'pf_o_amb':0,'pf_o_sha':0,'age_o':3,'attr':2,'sinc':2,'intel':2,'fun':2,'like':2}))
+    
+    print(infer.map_query(variables = ['attr1_1','sinc1_1','intel1_1','fun1_1','amb1_1','shar1_1'], evidence={'samerace':1,'race_o':2,'race':2,'condtn':1,'int_corr':2,'dec':0,'imprace':1,'imprelig':1,'met':1,'goal':1,'gender':0,'age':2,'attr2_1':1,'sinc2_1':0,'intel2_1':1,'fun2_1':1,'amb2_1':0,'shar2_1':0,'dec_o':0,'match':0,'attr_o':2,'sinc_o':2,'intel_o':2,'fun_o':2,'like_o':2,'career_c':1,'field_cd':1,'date':5,'go_out':1,'pf_o_att':2,'pf_o_sin':1,'pf_o_int':1,'pf_o_fun':1,'pf_o_amb':0,'pf_o_sha':0,'age_o':3,'attr':2,'sinc':2,'intel':2,'fun':2,'like':2}))
+    
+    print(infer.map_query(variables = ['attr2_1','sinc2_1','intel2_1','fun2_1','amb2_1','shar2_1'], evidence={'samerace':1,'race_o':2,'race':2,'condtn':1,'int_corr':2,'dec':0,'attr1_1':1,'sinc1_1':1,'intel1_1':1,'fun1_1':1,'amb1_1':0,'shar1_1':0,'imprace':1,'imprelig':1,'met':1,'goal':1,'gender':0,'age':2,'dec_o':0,'match':0,'attr_o':2,'sinc_o':2,'intel_o':2,'fun_o':2,'like_o':2,'career_c':1,'field_cd':1,'date':5,'go_out':1,'pf_o_att':2,'pf_o_sin':1,'pf_o_int':1,'pf_o_fun':1,'pf_o_amb':0,'pf_o_sha':0,'age_o':3,'attr':2,'sinc':2,'intel':2,'fun':2,'like':2}))
+    
+    #print(infer.max_marginal(variables = ['dec'],evidence={'attr':0,'sinc':0,'intel':0,'fun':0,'like':0,'imprace':1,'imprelig':1, 'condtn':1,'goal':1,'attr1_1':0,'sinc1_1':0,'intel1_1':0,'fun1_1':0,'amb1_1':0,'shar1_1':1,'met':1}))
     
     print("model fitted")
     print(model.check_model())
