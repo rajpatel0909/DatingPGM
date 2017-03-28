@@ -150,7 +150,7 @@ if __name__ == '__main__':
     #infer.map_query((['dec'],evidence={'attr':0,'sinc':0,'intel':0,'fun':0,'like':0,'imprace':1,'imprelig':1, 'condtn':1,'goal':1,'attr1_1':0,'sinc1_1':0,'intel1_1':0,'fun1_1':0,'amb1_1':0,'shar1_1':1,'met':1}) ['dec']))
     #infer = BeliefPropagation(model)
     
-    print(infer.map_query(variables = ['match'], evidence={'dec':0, 'dec_o':0}))
+    print(infer.map_query(variables = ['match','dec','dec_o'], evidence={'pf_o_att':0,'pf_o_sin':0,'pf_o_int':0,'pf_o_fun':0,'pf_o_amb':0,'pf_o_sha':0,'attr':0,'sinc':0,'intel':0,'fun':0,'like':0,'career_c':1,'field_cd':1,'go_out':1,'date':1,'gender':1,'attr2_1':0,'sinc2_1':0,'intel2_1':0,'fun2_1':0,'amb2_1':0,'shar2_1':1,'race':1,'race_o':1,'attr1_1':0,'sinc1_1':0,'intel1_1':0,'fun1_1':0,'amb1_1':0,'shar1_1':0,'imprace':5,'imprelig':5,'samerace':0,'int_corr':2,'met':1,'goal':1,'age':1,'age_o':1}))
     
     print("model fitted")
     print(model.check_model())
