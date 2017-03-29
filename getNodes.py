@@ -1,5 +1,5 @@
 def getNodesFromCSV():
-    print("getting nodes from files")
+    #print("getting nodes from files")
     file = open("newData.csv");
     line = file.readline()
     nodes = line.split(',')

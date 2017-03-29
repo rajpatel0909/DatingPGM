@@ -5,7 +5,7 @@ import pandas as pd
 
 def trainNeuralNetwork():
     #trainX, trainY, testX, testY, ImageX, ImageY
-    print "Neural Network"
+    #print "Neural Network"
     
     data = pd.read_csv('continousData.csv', sep=',',header=None)
     
